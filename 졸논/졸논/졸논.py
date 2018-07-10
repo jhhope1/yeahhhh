@@ -1,9 +1,12 @@
+import os
+os.environ['CUDA_VISIBLE_DEVICES']='3'
+import test_engine
 import sys
+sys.stdout=open('output_log.txt','w')
 import pylab
 import environment
 import numpy as np
 import random
-import test_engine
 import plotter
 from collections import deque
 from keras.layers import Dense
