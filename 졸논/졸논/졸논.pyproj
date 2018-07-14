@@ -21,7 +21,15 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="environment.py" />
+    <Compile Include="plotter.py" />
+    <Compile Include="Robotengine.py" />
+    <Compile Include="test_engine.py" />
+    <Compile Include="theta_to_plot.py" />
     <Compile Include="졸논.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="output_log.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

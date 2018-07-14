@@ -47,8 +47,8 @@ class Env():
                 self.R.leg[p].sub[i].theta = theta[p * self.R.numsubLeg + i]
                 self.R.leg[p].sub[i].omega = omega[p * self.R.numsubLeg + i]
     def get_reward(self):
-        self.reward = -np.mean(np.square(self.R.body.vs.flatten()-vs_goal))
-        self.reward -= np.mean(np.square(self.R.body.rs.flatten()[2])-rz_goal)
+        self.reward = -1 * np.mean(np.square(self.R.body.vs.flatten()-vs_goal))
+        self.reward -= np.mean(np.square(self.R.body.rs.flatten()[2]-rz_goal))
         self.reward += 1.
         if(self.check_done() == 1):
             self.reward = -100.

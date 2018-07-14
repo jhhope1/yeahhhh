@@ -1,7 +1,6 @@
-import matplotlib as mpl
-mpl.use('Agg')
-import matplotlib.pyplot as plt
 import environment
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
@@ -51,7 +50,6 @@ def test(actor):
     #  env.R.body.wb = np.array([[1.], [-1.], [1.]])
     #  env.R.body.vs = np.array([[0.], [2.], [1.]])
     for t in range(int(endtime/env.R.dtime)):
-        print('t = ', t)
         action = actor(np.reshape(env.state, [1, env.state_size]), batch_size=1)
         #  np.zeros((12), dtype=np.float64)
         next_state, reward, done = env.step(action)
@@ -61,6 +59,23 @@ def test(actor):
         if (done == 1):
             print(done)
             break
+        plot_robot(points)
+        plt.pause(0.01)
+        ax.clear()
+def test_never_ending(actor):
+    env = environment.Env()
+    state_size = env.state_size
+    action_size = env.action_size
+    env.reset()
+    #  env.R.body.wb = np.array([[1.], [-1.], [1.]])
+    #  env.R.body.vs = np.array([[0.], [2.], [1.]])
+    for t in range(int(endtime/env.R.dtime)):
+        action = actor(np.reshape(env.state, [1, env.state_size]), batch_size=1)
+        #  np.zeros((12), dtype=np.float64)
+        next_state, reward, done = env.step(action)
+        points = np.concatenate([np.reshape(env.R.body.Rnow, (4, 3)), np.reshape(env.R.joints, (12, 3))], axis=0)
+        if (t==0):
+            plt.show()
         plot_robot(points)
         plt.pause(0.01)
         ax.clear()
