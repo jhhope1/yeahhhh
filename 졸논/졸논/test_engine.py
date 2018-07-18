@@ -1,6 +1,7 @@
-import environment
-import matplotlib.pyplot as plt
 import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
+import environment
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 

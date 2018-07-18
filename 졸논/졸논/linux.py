@@ -1,8 +1,8 @@
 import os
 os.environ['CUDA_VISIBLE_DEVICES']='3'
+import test_engine
 import sys
-sys.stdout=open('output_log_180716.txt','w')
-import test_engine #MUST BE imported before pylab
+sys.stdout=open('output_log.txt','w')
 import pylab
 import environment
 import numpy as np
@@ -13,7 +13,6 @@ from keras.layers import Dense
 from keras.optimizers import Adam
 from keras.models import Sequential
 from keras import backend as K
-import keras
 
 EPISODES = 100000
 
@@ -22,22 +21,22 @@ class A2CAgent:
 
     def __init__(self, state_size, action_size):
         self.render = False
-        self.load_model = True
+        self.load_model = False
         # 상태와 행동의 크기 정의
         self.state_size = state_size
         self.action_size = action_size
         # DQN hyperparameter 여기서 epsilon은 state의 stdeva의 크기로 사용될 것.
-        self.epsilon = 0.001
+        self.epsilon = 1.0
         self.epsilon_decay = 0.9999
-        self.epsilon_min = 0.001#hyperparameter의 값을 잘 조정할 것... 제발
+        self.epsilon_min = 0.01#hyperparameter의 값을 잘 조정할 것... 제발
 
         # 액터-크리틱 하이퍼파라미터
         self.discount_factor = 0.99999
-        self.actor_lr = 0.0001
+        self.actor_lr = 0.001
         # critic를 Q함수로 한다. 가즈아.
-        self.critic_lr = 0.0005
+        self.critic_lr = 0.005
 
-        self.batch_size = 300#마찬가지
+        self.batch_size = 1000#마찬가지
         self.train_start = 10000  ########앙 기모딱 훨씬더 늘려야 할둣.
 
         # 리플레이 메모리, 최대 크기 10000
@@ -55,18 +54,19 @@ class A2CAgent:
         self.update_target_model()
 
         if self.load_model:
-            self.actor.load_weights("./save_model/robot_actor.h5")
-            self.critic.load_weights("./save_model/robot_critic.h5")
+            self.actor.load_weights("./save_model/robot_actor_trained.h5")
+            self.critic.load_weights("./save_model/robot_critic_trained.h5")
+            self.target_critic.load_weights("./save_model/robot_target_critic_trained.h5")
 
     # critic: 상태와 행동을 받아서 Q함수를 계산
     def build_critic(self):
         critic = Sequential()
         critic.add(Dense(100, input_dim=self.state_size + self.action_size, activation='relu',
-                         kernel_initializer=keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)))
+                         kernel_initializer='he_uniform'))
         critic.add(Dense(100, activation='relu',
-                         kernel_initializer=keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)))
+                         kernel_initializer='he_uniform'))
         critic.add(Dense(1, activation='linear',
-                         kernel_initializer=keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)))
+                         kernel_initializer='he_uniform'))
         critic.summary()
         critic.compile(loss='mse', optimizer=Adam(lr=self.critic_lr))
         return critic
@@ -75,11 +75,11 @@ class A2CAgent:
     def build_actor(self):
         actor = Sequential()
         actor.add(Dense(50, input_dim=self.state_size, activation='relu',
-                        kernel_initializer=keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)))
+                        kernel_initializer='he_uniform'))
         actor.add(Dense(50, activation='relu',
-                        kernel_initializer=keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)))
+                        kernel_initializer='he_uniform'))
         actor.add(Dense(self.action_size, activation='tanh',
-                        kernel_initializer=keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)))
+                        kernel_initializer='he_uniform'))
         actor.summary()
         return actor
 
@@ -152,7 +152,6 @@ if __name__ == "__main__":
     agent = A2CAgent(state_size, action_size)
 
     global_step = 0
-    max_score = -100
     scores, episodes = [], []
 
     for e in range(EPISODES):
@@ -164,7 +163,7 @@ if __name__ == "__main__":
         state = env.state
         state = np.reshape(state, [1, state_size])
         life = 0
-        if( e%100 ==0):
+        if( e%1000 ==0):
             test_engine.test(agent.actor.predict)
         while (done == 0):
             life +=1
@@ -184,10 +183,6 @@ if __name__ == "__main__":
             #  print('rs = ', env.R.body.rs)
             #  print('Rnow = ', env.R.body.Rnow)
             if (done != 0):
-                if max_score < score and e>10:
-                    max_score = max(max_score, score)
-                    agent.actor.save_weights("./save_model/robot_actor.h5")
-                    agent.critic.save_weights("./save_model/robot_critic.h5")
                 # 각 에피소드마다 타깃 모델을 모델의 가중치로 업데이트
                 agent.update_target_model()
                 # 에피소드마다 학습 결과 출력
@@ -197,10 +192,11 @@ if __name__ == "__main__":
                 pylab.savefig("./save_graph/robot_a2c.png")
                 print("episode:", e, "  score:", score, 'life: ', life, 'epsilon: ', agent.epsilon)
 
-                # 이전 10개 에피소드의 점수 평균이 10000보다 크면 학습 중단
+                # 이전 10개 에피소드의 점수 평균이 490보다 크면 학습 중단
                 if np.mean(scores[-min(10, len(scores)):]) > 10000:
                     print('앙 끝났띠')
                     agent.actor.save_weights("./save_model/robot_actor.h5")
-                    agent.critic.save_weights("./save_model/robot_critic.h5")
+                    agent.critic.save_weights(
+                        "./save_model/robot_critic.h5")
                     sys.exit()
             #주의:  에피 10번 끝날때마다 test_py 이용해서 돌리고 결과확인하는 코드 넣기 바람. 즉, 여기서 얻은 weight로 시각화
