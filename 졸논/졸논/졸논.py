@@ -27,9 +27,9 @@ class A2CAgent:
         self.state_size = state_size
         self.action_size = action_size
         # DQN hyperparameter 여기서 epsilon은 state의 stdeva의 크기로 사용될 것.
-        self.epsilon = 0.001
+        self.epsilon = 0.01
         self.epsilon_decay = 0.9999
-        self.epsilon_min = 0.001#hyperparameter의 값을 잘 조정할 것... 제발
+        self.epsilon_min = 0.01#hyperparameter의 값을 잘 조정할 것... 제발
 
         # 액터-크리틱 하이퍼파라미터
         self.discount_factor = 0.99999
@@ -37,7 +37,7 @@ class A2CAgent:
         # critic를 Q함수로 한다. 가즈아.
         self.critic_lr = 0.0005
 
-        self.batch_size = 300#마찬가지
+        self.batch_size = 1000#마찬가지
         self.train_start = 10000  ########앙 기모딱 훨씬더 늘려야 할둣.
 
         # 리플레이 메모리, 최대 크기 10000

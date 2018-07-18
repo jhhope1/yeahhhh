@@ -10,6 +10,5 @@ actor.add(Dense(50, activation='relu',
                 kernel_initializer=keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)))
 actor.add(Dense(environment.action_size, activation='tanh',
                 kernel_initializer=keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)))
-
 actor.load_weights("./save_model/robot_actor.h5")
 test_engine.test_never_ending(actor.predict)
