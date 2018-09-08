@@ -10,7 +10,7 @@ vs_goal = np.array([1, 0, 0])
 rz_goal = 0.25
 rx_finish = 5
 action_size = 12
-state_size = 42
+state_size = 42 
 
 class Env():
     def __init__(self):
