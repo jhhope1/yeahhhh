@@ -30,7 +30,7 @@ def Q2rot(Q):
     qx = (Q[2][1] - Q[1][2]) / 4 / qw
     qy = (Q[0][2] - Q[2][0]) / 4 / qw
     qz = (Q[1][0] - Q[0][1]) / 4 / qw
-    qv = np.array([[qx], [qy], [qz]])
+    qv = np.array([[qx], [qy], [qz]]) 
     # quaternion normalization
 
     qvsquare = sum(qv * qv)
