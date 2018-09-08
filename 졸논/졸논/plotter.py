@@ -6,4 +6,4 @@ Rprime = np.array([[1., 0.24, 0.52], [0.22, 0.25, -0.65], [0.12, 0.13, 0.33]])
 '''print(Rprime)
 print(Rengine.Q2rot(Rprime))
 print(np.linalg.det(Rprime))
-print(np.linalg.det(Rengine.Q2rot(Rprime)))'''
+print(np.linalg.det(Rengine.Q2rot(Rprime)))''' 

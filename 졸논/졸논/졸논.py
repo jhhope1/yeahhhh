@@ -6,7 +6,7 @@ import test_engine #MUST BE imported before pylab
 import pylab
 import environment
 import numpy as np
-import random
+import random 
 import plotter
 from collections import deque
 from keras.layers import Dense
