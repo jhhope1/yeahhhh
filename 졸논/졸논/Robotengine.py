@@ -1,6 +1,6 @@
 import numpy as np
 import copy
-import math # math가 없다고오오??????
+import math
 from pyquaternion import Quaternion
 
 #Feqc = Mtot * g
